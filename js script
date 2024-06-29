@@ -1,0 +1,26 @@
+const express = require('express');
+const fetch = require('node-fetch');
+const app = express();
+const PORT = process.env.PORT || 3000;
+const DISCORD_API_URL = 'https://discord.com/api/v9/invites/YOUR_INVITE_CODE?with_counts=true';
+
+app.use(express.static('public'));
+
+app.get('/api/member-count', async (req, res) => {
+    try {
+        const response = await fetch(DISCORD_API_URL, {
+            headers: {
+                'Authorization': `Bot YOUR_BOT_TOKEN`
+            }
+        });
+        const data = await response.json();
+        res.json({ member_count: data.approximate_member_count });
+    } catch (error) {
+        console.error('Error fetching member count:', error);
+        res.status(500).json({ error: 'Failed to fetch member count' });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
